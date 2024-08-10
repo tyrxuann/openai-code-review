@@ -1,7 +1,10 @@
 package dev.tyrxuan.middleware.sdk;
 
 import com.alibaba.fastjson2.JSON;
+import com.google.common.collect.ImmutableList;
+import dev.tyrxuan.middleware.sdk.domain.model.ChatCompletionRequest;
 import dev.tyrxuan.middleware.sdk.domain.model.ChatCompletionSyncResponse;
+import dev.tyrxuan.middleware.sdk.domain.model.Model;
 import dev.tyrxuan.middleware.sdk.types.utils.BearerTokenUtils;
 
 import java.io.BufferedReader;
@@ -63,6 +66,12 @@ public class OpenAiCodeReview {
                 + "]"
                 + "}";
 
+        ChatCompletionRequest chatCompletionRequest = new ChatCompletionRequest();
+        chatCompletionRequest.setModel(Model.GLM_4_FLASH.getCode());
+        chatCompletionRequest.setMessages(ImmutableList.of(
+                new ChatCompletionRequest.Prompt("user", "你是一个高级编程架构师，精通各类场景方案、架构设计和编程语言请，请您根据git diff记录，对代码做出评审。代码如下:"),
+                new ChatCompletionRequest.Prompt("user", diffCode)
+        ));
 
         try(OutputStream os = connection.getOutputStream()){
             byte[] input = jsonInpuString.getBytes(StandardCharsets.UTF_8);
