@@ -2,7 +2,9 @@ package dev.tyrxuan.middleware.sdk.test;
 
 import com.alibaba.fastjson2.JSON;
 import dev.tyrxuan.middleware.sdk.domain.model.ChatCompletionSyncResponse;
+import dev.tyrxuan.middleware.sdk.domain.model.Message;
 import dev.tyrxuan.middleware.sdk.types.utils.BearerTokenUtils;
+import dev.tyrxuan.middleware.sdk.types.utils.WXAccessTokenUtils;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -12,6 +14,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class ApiTest {
     public static void main(String[] args) {
@@ -68,5 +71,42 @@ public class ApiTest {
 
         ChatCompletionSyncResponse response = JSON.parseObject(content.toString(), ChatCompletionSyncResponse.class);
         System.out.println(response.getChoices().get(0).getMessage().getContent());
+    }
+
+    @Test
+    public void test_wx_push() {
+        String accessToken = WXAccessTokenUtils.getAccessToken();
+        System.out.println(accessToken);
+
+        Message message = new Message();
+        message.setUrl("https://github.com/tyrxuann/openai-code-review-log/blob/master/2024-08-10/APQ1qLg59EE9.md");
+        message.put("project", "big-market");
+        message.put("review", "feat: new feature");
+
+        String url = String.format("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=%s", accessToken);
+        sendPostRequest(url, JSON.toJSONString(message));
+    }
+
+    private static void sendPostRequest(String urlString, String jsonBody) {
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json; utf-8");
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setDoOutput(true);
+
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = jsonBody.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            try (Scanner scanner = new Scanner(conn.getInputStream(), StandardCharsets.UTF_8.name())) {
+                String response = scanner.useDelimiter("\\A").next();
+                System.out.println(response);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
