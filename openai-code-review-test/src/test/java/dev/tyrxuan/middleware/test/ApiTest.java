@@ -12,4 +12,9 @@ public class ApiTest {
     public void contextLoad() {
         log.info("context load...");
     }
+
+    @Test
+    public void test() {
+        System.out.println(Integer.parseInt("1234"));
+    }
 }
