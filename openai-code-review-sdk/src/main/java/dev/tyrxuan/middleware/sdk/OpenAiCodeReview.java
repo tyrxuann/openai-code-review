@@ -56,16 +56,6 @@ public class OpenAiCodeReview {
         connection.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
         connection.setDoOutput(true);
 
-        String jsonInpuString = "{"
-                + "\"model\":\"glm-4-flash\","
-                + "\"messages\": ["
-                + "    {"
-                + "        \"role\": \"user\","
-                + "        \"content\": \"你是一个高级编程架构师，精通各类场景方案、架构设计和编程语言；请您根据git diff记录，对代码做出评审。代码为: " + diffCode + "\""
-                + "    }"
-                + "]"
-                + "}";
-
         ChatCompletionRequest chatCompletionRequest = new ChatCompletionRequest();
         chatCompletionRequest.setModel(Model.GLM_4_FLASH.getCode());
         chatCompletionRequest.setMessages(ImmutableList.of(
@@ -74,7 +64,7 @@ public class OpenAiCodeReview {
         ));
 
         try(OutputStream os = connection.getOutputStream()){
-            byte[] input = jsonInpuString.getBytes(StandardCharsets.UTF_8);
+            byte[] input = JSON.toJSONString(chatCompletionRequest).getBytes(StandardCharsets.UTF_8);
             os.write(input);
         }
 
