@@ -1,4 +1,4 @@
-package dev.tyrxuan.middleware.sdk.types.utils;
+package dev.tyrxuan.middleware.sdk.infrastructure.openai.utils;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

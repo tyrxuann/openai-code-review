@@ -1,6 +1,8 @@
-package dev.tyrxuan.middleware.sdk.types.utils;
+package dev.tyrxuan.middleware.sdk.infrastructure.weixin.utils;
 
 import com.alibaba.fastjson2.JSON;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -8,22 +10,19 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class WXAccessTokenUtils {
+    private static final Logger log = LoggerFactory.getLogger(WXAccessTokenUtils.class);
 
-    private static final String APPID = "wx95176c705a75d99f";
-    private static final String SECRET = "3c708763d856036a7504e235934533e5";
     private static final String GRANT_TYPE = "client_credential";
     private static final String URL_TEMPLATE = "https://api.weixin.qq.com/cgi-bin/token?grant_type=%s&appid=%s&secret=%s";
 
-    public static String getAccessToken() {
+    public static String getAccessToken(String appId, String secret) {
         try {
-            String urlString = String.format(URL_TEMPLATE, GRANT_TYPE, APPID, SECRET);
+            String urlString = String.format(URL_TEMPLATE, GRANT_TYPE, appId, secret);
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
             int responseCode = connection.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
-
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 String inputLine;
@@ -34,18 +33,14 @@ public class WXAccessTokenUtils {
                 }
                 in.close();
 
-                // Print the response
-                System.out.println("Response: " + response);
-
                 Token token = JSON.parseObject(response.toString(), Token.class);
-
                 return token.getAccess_token();
             } else {
-                System.out.println("GET request failed");
+                log.warn("Get weixin accessToken failed, response status: {}", responseCode);
                 return null;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Get weixin accessToken occur error", e);
             return null;
         }
     }

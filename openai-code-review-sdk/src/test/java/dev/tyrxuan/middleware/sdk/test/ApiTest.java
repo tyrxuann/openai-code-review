@@ -1,10 +1,10 @@
 package dev.tyrxuan.middleware.sdk.test;
 
 import com.alibaba.fastjson2.JSON;
-import dev.tyrxuan.middleware.sdk.domain.model.ChatCompletionSyncResponse;
-import dev.tyrxuan.middleware.sdk.domain.model.Message;
-import dev.tyrxuan.middleware.sdk.types.utils.BearerTokenUtils;
-import dev.tyrxuan.middleware.sdk.types.utils.WXAccessTokenUtils;
+import dev.tyrxuan.middleware.sdk.infrastructure.openai.response.ChatCompletionSyncResponse;
+import dev.tyrxuan.middleware.sdk.infrastructure.weixin.model.TemplateMessage;
+import dev.tyrxuan.middleware.sdk.infrastructure.openai.utils.BearerTokenUtils;
+import dev.tyrxuan.middleware.sdk.infrastructure.weixin.utils.WXAccessTokenUtils;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -75,13 +75,13 @@ public class ApiTest {
 
     @Test
     public void test_wx_push() {
-        String accessToken = WXAccessTokenUtils.getAccessToken();
+        String accessToken = WXAccessTokenUtils.getAccessToken("wx95176c705a75d99f", "3c708763d856036a7504e235934533e5");
         System.out.println(accessToken);
 
-        Message message = new Message();
+        TemplateMessage message = new TemplateMessage("oOEMv61IDYdE2Mys5jEXbK7ixCdg", "5KZkHzQMiiO5S8aMoHrzAYECaR4ChRwhqJH6dxF7kbg");
         message.setUrl("https://github.com/tyrxuann/openai-code-review-log/blob/master/2024-08-10/APQ1qLg59EE9.md");
-        message.put("project", "big-market");
-        message.put("review", "feat: new feature");
+        message.put(TemplateMessage.TemplateKey.REPO_NAME, "big-market");
+        message.put(TemplateMessage.TemplateKey.COMMIT_MESSAGE, "feat: new feature");
 
         String url = String.format("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=%s", accessToken);
         sendPostRequest(url, JSON.toJSONString(message));

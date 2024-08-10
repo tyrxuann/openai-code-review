@@ -1,4 +1,4 @@
-package dev.tyrxuan.middleware.sdk.domain.model;
+package dev.tyrxuan.middleware.sdk.infrastructure.openai.request;
 
 import java.util.List;
 
